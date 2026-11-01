@@ -132,13 +132,17 @@ route();
     }
 
     const dados = await resposta.json();
+const textoManifesto =
+  dados.manifest_text ||
+  dados.manifesto_text;
 
-    if (!dados.manifesto_text) {
-       area.textContent = 'Manifesto não encontrado.';
-   return;
-    }
-    }
-
+    if (!textoManifesto) {
+  area.textContent =
+    'Campos encontrados no JSON: ' +
+    Object.keys(dados).join(', ');
+  return;
+  }
+  } 
     function escapar(texto) {
       return String(texto).replace(/[&<>"']/g, caractere => ({
         '&': '&amp;',
@@ -161,7 +165,7 @@ route();
     }
 
     area.innerHTML = '<p>' +
-      formatarMarkdown(dados.manifesto_text) +
+      formatarMarkdown(textoManifesto) +
       '</p>';
 
   } catch (erro) {
