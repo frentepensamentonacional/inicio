@@ -1,0 +1,32 @@
+# FPN — pacote de edição do site
+
+## O que há neste pacote
+- `index.html`: site público, adaptado para carregar publicações publicadas a partir do repositório.
+- `.pages.yml`: configuração do Pages CMS.
+- `content/site.json`: campos institucionais editáveis.
+- `content/posts/`: publicações em arquivos JSON.
+- `media/`: imagens enviadas pelo painel.
+
+## Como instalar
+1. Abra o repositório `fpnwebofficial.github.io` na organização `fpnwebofficial`.
+2. Envie/substitua `index.html` na raiz do repositório.
+3. Envie `.pages.yml` na raiz (o ponto inicial faz parte do nome).
+4. Envie a pasta `content/` e a pasta `media/`.
+5. Faça commit das alterações na branch `main`.
+6. Abra https://app.pagescms.org/ e entre com a conta GitHub que tem permissão de edição.
+7. Instale/autorize o GitHub App Pages CMS para o repositório da FPN.
+8. Selecione o repositório e branch `main`. O CMS lê `.pages.yml` e mostrará Conteúdo institucional e Publicações.
+
+## Como publicar
+- Crie uma publicação.
+- Preencha título, data, categoria, resumo e texto.
+- Para imagem, use o seletor de mídia; os arquivos ficam em `media/`.
+- Deixe `status` como `draft` enquanto estiver preparando.
+- Mude para `published` para que apareça no site público.
+- Para excluir, abra a publicação no CMS e use a opção de exclusão.
+
+## Importante
+- O painel de edição fica em `app.pagescms.org`, não em `/admin/` do seu domínio.
+- O login é feito pelo GitHub. Não coloque senha ou token no HTML.
+- A integração de publicação busca arquivos da API pública do GitHub; o repositório do site precisa ser público.
+- Os campos institucionais estão configurados no CMS, mas esta primeira adaptação ainda mantém parte do texto fixo no HTML. A edição desses campos só altera o arquivo JSON; para refletir todas as páginas, é necessário conectar os campos ao HTML numa segunda etapa.

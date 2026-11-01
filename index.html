@@ -62,11 +62,7 @@ footer{background:#0d2e49;color:#dceaf4;padding:40px 0 22px}footer h3{color:whit
 
 <section class="page" id="sobre"><div class="banner"><div class="wrap"><div class="kicker">Quem somos</div><h1>Sobre a FPN</h1><p class="lead">Informações sobre a origem, a finalidade e a natureza do grupo.</p></div></div><section class="content"><div class="wrap article"><h2>Apresentação</h2><p>A Frente de Pensamento Nacional (FPN) é apresentada neste portal como um grupo independente. Conte aqui quando e por que foi criado, quem responde por sua organização e quais são suas atividades.</p><h2>Finalidade</h2><p>Descreva a finalidade institucional definida pelos integrantes, distinguindo atividades de estudo, debate, publicação e organização.</p><h2>História</h2><p>Inclua datas, fatos verificáveis e marcos importantes. Não publique nomes ou imagens de integrantes sem autorização.</p></div></section></section>
 
-<section class="page" id="publicacoes"><div class="banner"><div class="wrap"><div class="kicker">Biblioteca pública</div><h1>Publicações</h1><p class="lead">Artigos, ensaios, comunicados e documentos disponibilizados pela FPN.</p></div></div><section class="content"><div class="wrap"><input class="search" id="search" type="search" placeholder="Pesquisar publicações..." aria-label="Pesquisar publicações"><div class="list" id="pubs">
-<article class="publication"><small>Documento · A publicar</small><h3>Apresentação institucional da FPN</h3><p class="muted">Adicione um resumo fiel do documento e um link para sua versão integral.</p></article>
-<article class="publication"><small>Artigo · A publicar</small><h3>Primeira publicação</h3><p class="muted">Substitua este exemplo por um artigo real, com autoria, data e referências.</p></article>
-<article class="publication"><small>Comunicado · A publicar</small><h3>Comunicados oficiais</h3><p class="muted">Utilize esta área para comunicados institucionais datados e verificáveis.</p></article>
-</div></div></section></section>
+<section class="page" id="publicacoes"><div class="banner"><div class="wrap"><div class="kicker">Biblioteca pública</div><h1>Publicações</h1><p class="lead">Artigos, ensaios, comunicados e documentos disponibilizados pela FPN.</p></div></div><section class="content"><div class="wrap"><input class="search" id="search" type="search" placeholder="Pesquisar publicações..." aria-label="Pesquisar publicações"><div class="list" id="pubs"><p class="muted">Carregando publicações…</p></div></div></section></section>
 
 <section class="page" id="organizacao"><div class="banner"><div class="wrap"><div class="kicker">Funcionamento</div><h1>Organização</h1><p class="lead">Como o grupo se estrutura, delibera e mantém seus registros.</p></div></div><section class="content"><div class="wrap article"><h2>Estrutura</h2><p>Apresente as funções existentes, suas responsabilidades e a forma de escolha ou substituição dos responsáveis.</p><h2>Regras internas</h2><p>Publique o regulamento ou estatuto, se houver, incluindo procedimentos de decisão, resolução de divergências e prestação de contas.</p><h2>Participação</h2><p>Explique objetivamente os critérios e procedimentos de participação, sem solicitar dados pessoais desnecessários.</p></div></section></section>
 
@@ -84,4 +80,40 @@ document.getElementById('search').addEventListener('input',e=>{let q=e.target.va
 document.getElementById('contact').addEventListener('submit',e=>{e.preventDefault();document.getElementById('feedback').textContent='Campos preenchidos. Nenhuma mensagem foi enviada: conecte o formulário a um serviço seguro antes de publicar.'});
 route();
 </script>
+
+<script>
+(async function loadFpnPosts(){
+  const target = document.getElementById('pubs');
+  const repo = 'frentepensamentonacional/inicio';
+  const branch = 'main';
+  const api = `https://api.github.com/repos/${repo}/contents/content/posts?ref=${branch}`;
+  try {
+    const response = await fetch(api, {headers:{'Accept':'application/vnd.github+json'}});
+    if (!response.ok) throw new Error('Não foi possível consultar as publicações.');
+    const files = await response.json();
+    const posts = [];
+    for (const file of files.filter(f => f.type === 'file' && f.name.endsWith('.json'))) {
+      const r = await fetch(file.download_url);
+      if (!r.ok) continue;
+      const p = await r.json();
+      if (p.status === 'published') posts.push(p);
+    }
+    posts.sort((a,b) => (b.date || '').localeCompare(a.date || ''));
+    target.innerHTML = posts.length ? posts.map(p => `
+      <article class="publication">
+        <small>${escapeHtml(p.category || 'Publicação')} · ${escapeHtml(p.date || '')}</small>
+        <h3>${escapeHtml(p.title || 'Sem título')}</h3>
+        ${p.image ? `<img src="${escapeAttr(p.image)}" alt="${escapeAttr(p.image_alt || p.title || 'Imagem da publicação')}" style="max-width:100%;height:auto;border-radius:12px;margin:10px 0">` : ''}
+        <p class="muted">${escapeHtml(p.summary || '')}</p>
+        ${p.body ? `<details style="margin-top:12px"><summary>Leia a publicação</summary><div style="white-space:pre-wrap;margin-top:10px">${escapeHtml(p.body)}</div></details>` : ''}
+      </article>`).join('') : '<p class="muted">Ainda não há publicações disponíveis.</p>';
+    document.getElementById('search').dispatchEvent(new Event('input'));
+  } catch (err) {
+    target.innerHTML = '<p class="muted">Não foi possível carregar as publicações neste momento. Tente novamente mais tarde.</p>';
+  }
+  function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function escapeAttr(v){return escapeHtml(v);}
+})();
+</script>
+
 </body></html>

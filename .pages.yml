@@ -1,0 +1,79 @@
+media:
+  input: media
+  output: /media
+  rename: safe
+  categories: [image]
+
+content:
+  - name: site
+    label: Conteúdo institucional
+    type: file
+    path: content/site.json
+    format: json
+    fields:
+      - name: site_name
+        label: Nome do site
+        type: string
+      - name: tagline
+        label: Slogan
+        type: string
+      - name: home_title
+        label: Título da página inicial
+        type: string
+      - name: home_intro
+        label: Introdução da página inicial
+        type: text
+      - name: manifesto_text
+        label: Texto do manifesto
+        type: rich-text
+      - name: principles_text
+        label: Texto dos princípios
+        type: rich-text
+      - name: about_text
+        label: Texto sobre a FPN
+        type: rich-text
+      - name: organization_text
+        label: Texto da organização
+        type: rich-text
+      - name: transparency_text
+        label: Texto de transparência
+        type: rich-text
+
+  - name: posts
+    label: Publicações
+    type: collection
+    path: content/posts
+    format: json
+    filename: "{primary}.json"
+    view:
+      fields: [title, date, category, status]
+      sort: [date, title]
+    fields:
+      - name: title
+        label: Título
+        type: string
+        required: true
+      - name: date
+        label: Data
+        type: date
+        required: true
+      - name: category
+        label: Categoria
+        type: string
+      - name: summary
+        label: Resumo
+        type: text
+      - name: body
+        label: Texto da publicação
+        type: rich-text
+      - name: image
+        label: Imagem
+        type: image
+      - name: image_alt
+        label: Descrição da imagem
+        type: string
+      - name: status
+        label: Situação
+        type: select
+        options:
+          values: [draft, published]
