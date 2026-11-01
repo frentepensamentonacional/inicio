@@ -21,6 +21,39 @@
   color: #2c6e9f;
   font-size: 1.1em;
 }
+ #manifest-content h2 {
+  color: var(--navy);
+  font-size: 1.55rem;
+  font-weight: 850;
+  margin: 30px 0 15px;
+  text-align: left;
+}
+
+#manifest-content p {
+  margin-bottom: 18px;
+  line-height: 1.85;
+}
+
+#manifest-content strong {
+  color: var(--navy);
+  font-weight: 800;
+}
+
+#manifest-content ul {
+  list-style-type: disc;
+  padding-left: 32px;
+  margin: 15px 0 25px;
+}
+
+#manifest-content li {
+  display: list-item;
+  padding-left: 5px;
+  margin-bottom: 10px;
+}
+
+#manifest-content li::marker {
+  color: var(--blue);
+}
 <style>
 :root{--navy:#123b5d;--blue:#2c6e9f;--sky:#b9ddf5;--pale:#eaf4fb;--ink:#172b3a;--muted:#5d7180;--line:#d9e5ed}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f5f8fb;color:var(--ink);font:16px/1.65 system-ui,Arial,sans-serif}
@@ -141,26 +174,74 @@ route();
   const area = document.getElementById('manifest-content');
 
   try {
-    const resposta = await fetch('/inicio/content/site.json?versao=3', {
+    const resposta = await fetch('/inicio/content/site.json?versao=4', {
       cache: 'no-store'
     });
 
-    if (!resposta.ok) {
-      throw new Error('HTTP ' + resposta.status);
+    if (!resposta.ok) throw new Error('HTTP ' + resposta.status);
+
+    const dados = await resposta.json();
+    let texto = dados.manifesto_text;
+
+    if (!texto) throw new Error('Manifesto não encontrado.');
+
+    // Corrige os caracteres escapados
+    texto = texto
+      .replace(/\\([#*])/g, '$1');
+
+    area.innerHTML = '';
+
+    let listaAtual = null;
+
+    texto.split(/\r?\n/).forEach(linha => {
+      const conteudo = linha.trim();
+      if (!conteudo) {
+        listaAtual = null;
+        return;
+      }
+
+      if (/^###?\s+/.test(conteudo)) {
+        listaAtual = null;
+        const h2 = document.createElement('h2');
+        h2.textContent = conteudo.replace(/^#{1,3}\s+/, '');
+        area.appendChild(h2);
+      } else if (/^[-*•]\s+/.test(conteudo)) {
+        if (!listaAtual) {
+          listaAtual = document.createElement('ul');
+          area.appendChild(listaAtual);
+        }
+
+        const li = document.createElement('li');
+        const item = conteudo.replace(/^[-*•]\s+/, '');
+        formatarNegrito(li, item);
+        listaAtual.appendChild(li);
+      } else {
+        listaAtual = null;
+        const p = document.createElement('p');
+        formatarNegrito(p, conteudo);
+        area.appendChild(p);
+      }
+    });
+
+    function formatarNegrito(elemento, conteudo) {
+      const partes = conteudo.split(/(\*\*.*?\*\*)/g);
+      partes.forEach(parte => {
+        if (parte.startsWith('**') && parte.endsWith('**')) {
+          const strong = document.createElement('strong');
+          strong.textContent = parte.slice(2, -2);
+          elemento.appendChild(strong);
+        } else {
+          elemento.appendChild(document.createTextNode(parte));
+        }
+      });
     }
 
-    const conteudo = await resposta.text();
-console.log('Conteúdo recebido:', conteudo);
-
-const dados = JSON.parse(conteudo);
-console.log('Chaves encontradas:', Object.keys(dados));
-
-const texto = dados.manifesto_text;
-
-    if (!texto) {
-      throw new Error('Manifesto não encontrado.');
-    }
-
+  } catch (erro) {
+    area.textContent = 'Erro ao carregar o manifesto: ' + erro.message;
+    console.error(erro);
+  }
+})();
+</script>
     area.innerHTML = '';
 
 let listaAtual = null;
