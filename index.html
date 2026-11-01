@@ -133,9 +133,10 @@ route();
 
     const dados = await resposta.json();
 
-    if (!dados.manifest_text) {
-      area.textContent = 'Manifesto não encontrado.';
-      return;
+    if (!dados.manifesto_text) {
+       area.textContent = 'Manifesto não encontrado.';
+   return;
+    }
     }
 
     function escapar(texto) {
@@ -160,7 +161,7 @@ route();
     }
 
     area.innerHTML = '<p>' +
-      formatarMarkdown(dados.manifest_text) +
+      formatarMarkdown(dados.manifesto_text) +
       '</p>';
 
   } catch (erro) {
