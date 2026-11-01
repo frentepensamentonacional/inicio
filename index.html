@@ -178,13 +178,39 @@ const texto = dados.manifesto_text;
 
     area.innerHTML = '';
 
-    const paragrafos = texto.trim().split(/\n\s*\n/);
+texto.split(/\r?\n/).forEach(linha => {
+  const conteudo = linha.trim();
 
-    paragrafos.forEach(conteudo => {
-      const p = document.createElement('p');
-      p.textContent = conteudo.trim();
-      area.appendChild(p);
-    });
+  if (!conteudo) return;
+
+  if (conteudo.startsWith('## ')) {
+    const titulo = document.createElement('h2');
+    titulo.textContent = conteudo.replace(/^##\s+/, '');
+    area.appendChild(titulo);
+
+  } else if (conteudo.startsWith('# ')) {
+    const titulo = document.createElement('h1');
+    titulo.textContent = conteudo.replace(/^#\s+/, '');
+    area.appendChild(titulo);
+
+  } else if (conteudo.startsWith('- ')) {
+    let lista = area.lastElementChild;
+
+    if (!lista || lista.tagName !== 'UL') {
+      lista = document.createElement('ul');
+      area.appendChild(lista);
+    }
+
+    const item = document.createElement('li');
+    item.textContent = conteudo.replace(/^-\s+/, '');
+    lista.appendChild(item);
+
+  } else {
+    const paragrafo = document.createElement('p');
+    paragrafo.textContent = conteudo;
+    area.appendChild(paragrafo);
+  }
+});
 
   } catch (erro) {
     area.textContent = 'Erro ao carregar o manifesto: ' + erro.message;
