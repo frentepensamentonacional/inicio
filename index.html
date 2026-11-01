@@ -118,39 +118,33 @@ route();
 })();
 </script>
 
-</body><script>
+
 <script>
 (async function carregarManifesto() {
   const area = document.getElementById('manifest-content');
 
   try {
-    const resposta = await fetch('./content/site.json', {
-      cache: 'no-store'
-    });
+    const resposta = await fetch('/inicio/content/site.json?versao=2');
 
     if (!resposta.ok) {
-      throw new Error('Erro HTTP: ' + resposta.status);
+      throw new Error('HTTP ' + resposta.status);
     }
 
     const dados = await resposta.json();
-    const textoManifesto = dados.manifesto_text;
+    const texto = dados.manifesto_text;
 
-    if (!textoManifesto) {
-      area.textContent = 'Manifesto não encontrado no JSON.';
-      return;
+    if (!texto) {
+      throw new Error('A chave manifesto_text não foi encontrada.');
     }
 
-    area.textContent = textoManifesto;
+    area.textContent = texto;
     area.style.whiteSpace = 'pre-wrap';
 
   } catch (erro) {
-    area.textContent = 'Erro ao carregar: ' + erro.message;
+    area.textContent = 'Erro ao carregar o manifesto: ' + erro.message;
     console.error(erro);
   }
 })();
-</script>
-</body>
-</html>
 </script>
 </body>
 </html>
