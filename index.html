@@ -4,6 +4,38 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Portal institucional da FPN — Frente de Pensamento Nacional">
 <title>FPN — Frente de Pensamento Nacional</title>
+  /* Manifesto FPN — identidade azul e branca */
+#manifest-content {
+  max-width: 850px;
+  margin: 30px auto;
+  padding: 35px;
+  background: #ffffff;
+  border: 1px solid #d8eaf7;
+  border-top: 4px solid #75b9e7;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(40, 110, 160, 0.08);
+  color: #263d50;
+  font-family: Georgia, serif;
+  font-size: 17px;
+  line-height: 1.9;
+  text-align: justify;
+}
+
+#manifest-content p {
+  margin: 0 0 22px;
+  text-indent: 28px;
+}
+
+#manifest-content p:first-child {
+  text-indent: 0;
+}
+
+@media (max-width: 600px) {
+  #manifest-content {
+    padding: 20px;
+    font-size: 16px;
+  }
+}
 <style>
 :root{--navy:#123b5d;--blue:#2c6e9f;--sky:#b9ddf5;--pale:#eaf4fb;--ink:#172b3a;--muted:#5d7180;--line:#d9e5ed}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f5f8fb;color:var(--ink);font:16px/1.65 system-ui,Arial,sans-serif}
@@ -123,12 +155,8 @@ route();
 (async function carregarManifesto() {
   const area = document.getElementById('manifest-content');
 
-<script>
-(async function carregarManifesto() {
-  const area = document.getElementById('manifest-content');
-
   try {
-    const resposta = await fetch('/inicio/content/site.json?versao=2', {
+    const resposta = await fetch('/inicio/content/site.json?versao=3', {
       cache: 'no-store'
     });
 
@@ -140,11 +168,18 @@ route();
     const texto = dados.manifesto_text;
 
     if (!texto) {
-      throw new Error('A chave manifesto_text não foi encontrada.');
+      throw new Error('Manifesto não encontrado.');
     }
 
-    area.textContent = texto;
-    area.style.whiteSpace = 'pre-wrap';
+    area.innerHTML = '';
+
+    const paragrafos = texto.trim().split(/\n\s*\n/);
+
+    paragrafos.forEach(conteudo => {
+      const p = document.createElement('p');
+      p.textContent = conteudo.trim();
+      area.appendChild(p);
+    });
 
   } catch (erro) {
     area.textContent = 'Erro ao carregar o manifesto: ' + erro.message;
