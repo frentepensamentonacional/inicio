@@ -135,9 +135,7 @@ route();
 
     const dados = await resposta.json();
 
-    const texto =
-      dados.manifest_text ||
-      dados.manifesto_text;
+    const texto = dados.manifesto_text;
 
     if (!texto) {
       area.textContent =
