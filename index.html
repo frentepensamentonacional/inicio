@@ -164,8 +164,13 @@ route();
       throw new Error('HTTP ' + resposta.status);
     }
 
-    const dados = await resposta.json();
-    const texto = dados.manifesto_text;
+    const conteudo = await resposta.text();
+console.log('Conteúdo recebido:', conteudo);
+
+const dados = JSON.parse(conteudo);
+console.log('Chaves encontradas:', Object.keys(dados));
+
+const texto = dados.manifesto_text;
 
     if (!texto) {
       throw new Error('Manifesto não encontrado.');
