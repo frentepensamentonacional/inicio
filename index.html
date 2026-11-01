@@ -119,7 +119,8 @@ route();
 </script>
 
 </body><script>
-  <script>
+  
+<script>
 (async function carregarManifesto() {
   const area = document.getElementById('manifest-content');
 
@@ -134,78 +135,25 @@ route();
 
     const dados = await resposta.json();
 
-    const textoManifesto =
+    const texto =
       dados.manifest_text ||
       dados.manifesto_text;
 
-    if (!textoManifesto) {
+    if (!texto) {
       area.textContent =
-        'Campos encontrados: ' + Object.keys(dados).join(', ');
+        'Manifesto não encontrado. Campos disponíveis: ' +
+        Object.keys(dados).join(', ');
       return;
     }
 
-    area.textContent = textoManifesto;
+    area.textContent = texto;
     area.style.whiteSpace = 'pre-wrap';
 
   } catch (erro) {
-    area.textContent = 'Erro ao carregar: ' + erro.message;
+    area.textContent = 'Erro ao carregar manifesto: ' + erro.message;
     console.error(erro);
   }
 })();
 </script>
 </body>
 </html>
-  const area = document.getElementById('manifest-content');
-
-  try {
-    const resposta = await fetch('./content/site.json', {
-      cache: 'no-store'
-    });
-
-    if (!resposta.ok) {
-      throw new Error('Erro ao carregar o arquivo.');
-    }
-
-    const dados = await resposta.json();
-const textoManifesto =
-  dados.manifest_text ||
-  dados.manifesto_text;
-
-    if (!textoManifesto) {
-  area.textContent =
-    'Campos encontrados no JSON: ' +
-    Object.keys(dados).join(', ');
-  return;
-  }
-  } 
-    function escapar(texto) {
-      return String(texto).replace(/[&<>"']/g, caractere => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
-      })[caractere]);
-    }
-
-    function formatarMarkdown(texto) {
-      return escapar(texto)
-        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-        .replace(/^# (.+)$/gm, '<h2>$1</h2>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/^- (.+)$/gm, '<li>$1</li>')
-        .replace(/\n{2,}/g, '</p><p>')
-        .replace(/\n/g, '<br>');
-    }
-
-    area.innerHTML = '<p>' +
-      formatarMarkdown(textoManifesto) +
-      '</p>';
-
-  } catch (erro) {
-    area.textContent = 'Não foi possível carregar o manifesto.';
-    console.error(erro);
-  }
-})();
-</script>
