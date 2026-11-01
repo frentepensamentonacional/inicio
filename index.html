@@ -177,6 +177,7 @@ route();
 </script>
 
 
+
 <script>
 (async function carregarManifesto() {
   const area = document.getElementById('manifest-content');
@@ -193,26 +194,25 @@ route();
 
     if (!texto) throw new Error('Manifesto não encontrado.');
 
-    // Corrige os caracteres escapados
-    texto = texto
-      .replace(/\\([#*])/g, '$1');
-
+    texto = texto.replace(/\\([#*])/g, '$1');
     area.innerHTML = '';
 
     let listaAtual = null;
 
     texto.split(/\r?\n/).forEach(linha => {
       const conteudo = linha.trim();
+
       if (!conteudo) {
         listaAtual = null;
         return;
       }
 
-      if (/^###?\s+/.test(conteudo)) {
+      if (/^#{1,3}\s+/.test(conteudo)) {
         listaAtual = null;
         const h2 = document.createElement('h2');
         h2.textContent = conteudo.replace(/^#{1,3}\s+/, '');
         area.appendChild(h2);
+
       } else if (/^[-*•]\s+/.test(conteudo)) {
         if (!listaAtual) {
           listaAtual = document.createElement('ul');
@@ -220,9 +220,9 @@ route();
         }
 
         const li = document.createElement('li');
-        const item = conteudo.replace(/^[-*•]\s+/, '');
-        formatarNegrito(li, item);
+        formatarNegrito(li, conteudo.replace(/^[-*•]\s+/, ''));
         listaAtual.appendChild(li);
+
       } else {
         listaAtual = null;
         const p = document.createElement('p');
@@ -233,22 +233,17 @@ route();
 
     function formatarNegrito(elemento, conteudo) {
       const partes = conteudo.split(/(\*\*.*?\*\*)/g);
+
       partes.forEach(parte => {
         if (parte.startsWith('**') && parte.endsWith('**')) {
-
-      area.appendChild(lista);
+          const strong = document.createElement('strong');
+          strong.textContent = parte.slice(2, -2);
+          elemento.appendChild(strong);
+        } else {
+          elemento.appendChild(document.createTextNode(parte));
+        }
+      });
     }
-
-    const item = document.createElement('li');
-    item.textContent = conteudo.replace(/^-\s+/, '');
-    lista.appendChild(item);
-
-  } else {
-    const paragrafo = document.createElement('p');
-    paragrafo.textContent = conteudo;
-    area.appendChild(paragrafo);
-  }
-});
 
   } catch (erro) {
     area.textContent = 'Erro ao carregar o manifesto: ' + erro.message;
@@ -256,5 +251,6 @@ route();
   }
 })();
 </script>
+
 </body>
 </html>
