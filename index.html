@@ -4,37 +4,22 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Portal institucional da FPN — Frente de Pensamento Nacional">
 <title>FPN — Frente de Pensamento Nacional</title>
-  /* Manifesto FPN — identidade azul e branca */
-#manifest-content {
-  max-width: 850px;
-  margin: 30px auto;
-  padding: 35px;
-  background: #ffffff;
-  border: 1px solid #d8eaf7;
-  border-top: 4px solid #75b9e7;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(40, 110, 160, 0.08);
-  color: #263d50;
-  font-family: Georgia, serif;
-  font-size: 17px;
-  line-height: 1.9;
-  text-align: justify;
+ #manifest-content ul {
+  display: block;
+  list-style-type: disc !important;
+  padding-left: 35px !important;
+  margin: 15px 0 25px;
 }
 
-#manifest-content p {
-  margin: 0 0 22px;
-  text-indent: 28px;
+#manifest-content li {
+  display: list-item !important;
+  margin-bottom: 10px;
+  padding-left: 5px;
 }
 
-#manifest-content p:first-child {
-  text-indent: 0;
-}
-
-@media (max-width: 600px) {
-  #manifest-content {
-    padding: 20px;
-    font-size: 16px;
-  }
+#manifest-content li::marker {
+  color: #2c6e9f;
+  font-size: 1.1em;
 }
 <style>
 :root{--navy:#123b5d;--blue:#2c6e9f;--sky:#b9ddf5;--pale:#eaf4fb;--ink:#172b3a;--muted:#5d7180;--line:#d9e5ed}
@@ -178,7 +163,46 @@ const texto = dados.manifesto_text;
 
     area.innerHTML = '';
 
+let listaAtual = null;
+
 texto.split(/\r?\n/).forEach(linha => {
+  const conteudo = linha.trim();
+
+  if (!conteudo) {
+    listaAtual = null;
+    return;
+  }
+
+  if (conteudo.startsWith('## ')) {
+    listaAtual = null;
+    const titulo = document.createElement('h2');
+    titulo.textContent = conteudo.replace(/^##\s+/, '');
+    area.appendChild(titulo);
+
+  } else if (conteudo.startsWith('# ')) {
+    listaAtual = null;
+    const titulo = document.createElement('h1');
+    titulo.textContent = conteudo.replace(/^#\s+/, '');
+    area.appendChild(titulo);
+
+  } else if (/^[-*•]\s+/.test(conteudo)) {
+    if (!listaAtual) {
+      listaAtual = document.createElement('ul');
+      area.appendChild(listaAtual);
+    }
+
+    const item = document.createElement('li');
+    item.textContent = conteudo.replace(/^[-*•]\s+/, '');
+    listaAtual.appendChild(item);
+
+  } else {
+    listaAtual = null;
+    const paragrafo = document.createElement('p');
+    paragrafo.textContent = conteudo;
+    area.appendChild(paragrafo);
+  }
+});
+  (linha => {
   const conteudo = linha.trim();
 
   if (!conteudo) return;
