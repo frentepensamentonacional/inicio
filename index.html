@@ -123,8 +123,14 @@ route();
 (async function carregarManifesto() {
   const area = document.getElementById('manifest-content');
 
+<script>
+(async function carregarManifesto() {
+  const area = document.getElementById('manifest-content');
+
   try {
-    const resposta = await fetch('/inicio/content/site.json?versao=2');
+    const resposta = await fetch('/inicio/content/site.json?versao=2', {
+      cache: 'no-store'
+    });
 
     if (!resposta.ok) {
       throw new Error('HTTP ' + resposta.status);
